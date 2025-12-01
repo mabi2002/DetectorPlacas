@@ -2,7 +2,7 @@ from model.detector import LicensePlateDetector
 from services.vehiculo_service import VehiculoService
 import cv2
 import os
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import config
 
 class CapturaService:
@@ -24,7 +24,9 @@ class CapturaService:
         """
         detections = self.detector.detect_and_read(frame)
         resultados = []
-        current_time = datetime.now()
+        # Usar zona horaria de Chihuahua (UTC-7)
+        chihuahua_tz = timezone(timedelta(hours=-7))
+        current_time = datetime.now(chihuahua_tz)
 
         for det in detections:
             placa_texto = det['text']
@@ -66,7 +68,8 @@ class CapturaService:
                             info_vehiculo['vehiculo_id'], 
                             placa_texto, 
                             img_name, 
-                            score
+                            score,
+                            fecha=current_time
                         )
                         self.last_capture_time[placa_texto] = current_time
                         print(f"Captura guardada: {placa_texto}")
@@ -90,7 +93,8 @@ class CapturaService:
                             None, 
                             placa_texto, 
                             img_name, 
-                            score
+                            score,
+                            fecha=current_time
                         )
                         self.last_capture_time[placa_texto] = current_time
                         print(f"Alerta guardada: {placa_texto}")

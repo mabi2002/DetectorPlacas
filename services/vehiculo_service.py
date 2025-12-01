@@ -61,13 +61,25 @@ class VehiculoService:
         return None
 
     @staticmethod
-    def registrar_lectura(vehiculo_id, placa_detectada, imagen_ruta, coincidencia):
+    def registrar_lectura(vehiculo_id, placa_detectada, imagen_ruta, coincidencia, fecha=None):
+        """
+        Registra una lectura de placa en la base de datos.
+        :param fecha: datetime object con timezone, se convertirá a string para almacenar
+        """
         conn = get_db_connection()
         try:
-            conn.execute(
-                "INSERT INTO lecturas (vehiculo_id, placa_detectada, imagen_ruta, coincidencia) VALUES (?, ?, ?, ?)",
-                (vehiculo_id, placa_detectada, imagen_ruta, coincidencia)
-            )
+            if fecha:
+                # Convertir datetime a string en formato legible
+                fecha_str = fecha.strftime("%Y-%m-%d %H:%M:%S")
+                conn.execute(
+                    "INSERT INTO lecturas (vehiculo_id, placa_detectada, imagen_ruta, coincidencia, fecha) VALUES (?, ?, ?, ?, ?)",
+                    (vehiculo_id, placa_detectada, imagen_ruta, coincidencia, fecha_str)
+                )
+            else:
+                conn.execute(
+                    "INSERT INTO lecturas (vehiculo_id, placa_detectada, imagen_ruta, coincidencia) VALUES (?, ?, ?, ?)",
+                    (vehiculo_id, placa_detectada, imagen_ruta, coincidencia)
+                )
             conn.commit()
         except Exception as e:
             print(f"Error al registrar lectura: {e}")

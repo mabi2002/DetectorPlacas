@@ -64,24 +64,27 @@ def iniciar_deteccion():
     
     cap = cv2.VideoCapture(source)
     
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            break
+    try:
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                break
+                
+            # Procesar frame
+            resultados = service.procesar_frame(frame)
             
-        # Procesar frame
-        resultados = service.procesar_frame(frame)
-        
-        # Dibujar resultados
-        frame = draw_results(frame, resultados)
-        
-        cv2.imshow('Detector de Placas', frame)
-        
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+            # Dibujar resultados
+            frame = draw_results(frame, resultados)
             
-    cap.release()
-    cv2.destroyAllWindows()
+            cv2.imshow('Detector de Placas', frame)
+            
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+    except KeyboardInterrupt:
+        print("\n\n✅ Detección detenida por el usuario.")
+    finally:
+        cap.release()
+        cv2.destroyAllWindows()
 
 if __name__ == "__main__":
     init_db()
